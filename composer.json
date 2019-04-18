@@ -17,11 +17,7 @@
         "php": "^7.1.3",
         "fideloper/proxy": "^4.0",
         "laravel/framework": "5.8.*",
-        "laravel/tinker": "^1.0",
-        "php-amqplib/php-amqplib": "^2.9",
-        "vladimir-yuldashev/laravel-queue-rabbitmq": "^8.0",
-        "yansongda/laravel-pay": "^2",
-        "51hs/alichat":"*"
+        "laravel/tinker": "^1.0"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
