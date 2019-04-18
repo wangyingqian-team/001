@@ -10,7 +10,7 @@
     "repositories":[
         {
             "type":"git",
-            "url":"git@gitlab.51hs.cn:php/alichat.git"
+            "url":"git@github.com:wangyingqian/alichat.git"
         }
     ],
     "require": {
@@ -25,7 +25,8 @@
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^3.0",
-        "phpunit/phpunit": "^7.5"
+        "phpunit/phpunit": "^7.5",
+        "wangyingqian/alichat":"dev-master"
     },
     "config": {
         "optimize-autoloader": true,
