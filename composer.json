@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
+    "name": "service-dine",
     "type": "project",
-    "description": "The Laravel Framework.",
+    "description": "扫码点餐",
     "keywords": [
         "framework",
         "laravel"
