@@ -1,5 +1,5 @@
 {
-    "name": "service-dine",
+    "name": "dine/service-dine",
     "type": "project",
     "description": "扫码点餐",
     "keywords": [

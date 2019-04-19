@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4fea74d2c4f02850a00f5a09aee2c90d",
+    "content-hash": "328df74dea4cf211fe6a1d6f5c249a03",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -3116,8 +3116,20 @@
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wangyingqian/alichat.git",
+                "url": "https://github.com/wangyingqian/alichat.git",
                 "reference": "51276ba41b823aad6713a5067ba0edb638fe22f1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wangyingqian/alichat/zipball/51276ba41b823aad6713a5067ba0edb638fe22f1",
+                "reference": "51276ba41b823aad6713a5067ba0edb638fe22f1",
+                "shasum": "",
+                "mirrors": [
+                    {
+                        "url": "https://dl.laravel-china.org/%package%/%reference%.%type%",
+                        "preferred": true
+                    }
+                ]
             },
             "require": {
                 "ext-json": "*",
@@ -3141,11 +3153,7 @@
                     "Wangyingqian\\AliChat\\": "src/"
                 }
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "Wangyingqian\\AliChat\\Tests\\": "tests/"
-                }
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
