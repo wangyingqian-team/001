@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "328df74dea4cf211fe6a1d6f5c249a03",
+    "content-hash": "a186c7bdbc63fd297ffa5a412ac49429",
     "packages": [
         {
             "name": "dnoegel/php-xdg-base-dir",
@@ -3113,16 +3113,16 @@
         },
         {
             "name": "wangyingqian/alichat",
-            "version": "dev-master",
+            "version": "v1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/wangyingqian/alichat.git",
-                "reference": "51276ba41b823aad6713a5067ba0edb638fe22f1"
+                "reference": "3266cc2b6d702e34a62ad8690f0a8e69c831b859"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wangyingqian/alichat/zipball/51276ba41b823aad6713a5067ba0edb638fe22f1",
-                "reference": "51276ba41b823aad6713a5067ba0edb638fe22f1",
+                "url": "https://api.github.com/repos/wangyingqian/alichat/zipball/3266cc2b6d702e34a62ad8690f0a8e69c831b859",
+                "reference": "3266cc2b6d702e34a62ad8690f0a8e69c831b859",
                 "shasum": "",
                 "mirrors": [
                     {
@@ -3168,7 +3168,7 @@
                 "alipay",
                 "wechat"
             ],
-            "time": "2019-04-18T02:45:22+00:00"
+            "time": "2019-04-19T06:14:08+00:00"
         }
     ],
     "packages-dev": [
@@ -5136,9 +5136,7 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {
-        "wangyingqian/alichat": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
