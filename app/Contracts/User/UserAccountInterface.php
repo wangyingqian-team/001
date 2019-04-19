@@ -2,11 +2,11 @@
 namespace App\Contracts\User;
 
 /**
- * 用户相关接口
+ * 用户账号相关接口
  *
  * @author zhangzhengkun
  */
-interface UserInterface
+interface UserAccountInterface
 {
 
 }
