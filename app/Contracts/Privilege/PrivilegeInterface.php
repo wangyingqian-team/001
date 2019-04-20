@@ -8,5 +8,22 @@ namespace App\Contracts\Privilege;
  */
 interface PrivilegeInterface
 {
+    /**
+     * 创建角色
+     *
+     * @param string $roleName
+     * @param string $privilegeList
+     *
+     * @return int
+     */
+    public function createRole($roleName, $privilegeList);
 
+    /**
+     * 查看角色详情
+     *
+     * @param int $roleId
+     *
+     * @return array
+     */
+    public function getRoleInfo($roleId);
 }
