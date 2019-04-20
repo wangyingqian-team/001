@@ -55,6 +55,9 @@ $response = $kernel->handle(
     $request = Illuminate\Http\Request::capture()
 );
 
+$redis = \Illuminate\Support\Facades\Redis::connection();
+$redis->set('a', 12);
+
 $response->send();
 
 $kernel->terminate($request, $response);
