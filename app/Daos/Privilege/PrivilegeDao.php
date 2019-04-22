@@ -141,6 +141,11 @@ class PrivilegeDao
             ->where('role.is_enable', 1)
             ->where('role.id', $roleId)->first();
 
+        if (!empty($rolePrivilegeData['privilege'])) {
+            $rolePrivilegeData['privilege_list'] = array_filter(explode(",", $rolePrivilegeData['privilege']));
+            unset($rolePrivilegeData['privilege']);
+        }
+
         return !empty($rolePrivilegeData) ? $rolePrivilegeData->toArray() : null;
     }
 }
