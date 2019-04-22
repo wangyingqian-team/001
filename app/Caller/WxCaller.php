@@ -1,10 +1,10 @@
 <?php
 namespace App\Caller;
 
+use App\Exceptions\OperationFailedException;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
-use RuntimeException;
 
 /**
  * 微信接口调用器
@@ -69,7 +69,7 @@ class WxCaller extends HttpCaller
                 'errcode' => $body['errcode']
             ]);
 
-            throw new RuntimeException("获取微信openid失败");
+            throw new OperationFailedException("获取微信openid失败");
         }
 
         return $body['openid'] ?? "";
@@ -101,7 +101,7 @@ class WxCaller extends HttpCaller
                     'errcode' => $body['errcode']
                 ]);
 
-                throw new RuntimeException("获取微信access_token失败");
+                throw new OperationFailedException("获取微信access_token失败");
             }
 
             Redis::set(self::ACCESS_TOKEN, $body['access_token']);
