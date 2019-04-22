@@ -2,6 +2,7 @@
 namespace App\Services\Privilege;
 
 use App\Contracts\Privilege\PrivilegeInterface;
+use App\Daos\Privilege\PrivilegeDao;
 
 /**
  * 角色与权限相关功能
@@ -11,17 +12,50 @@ use App\Contracts\Privilege\PrivilegeInterface;
 class PrivilegeManager implements PrivilegeInterface
 {
     /**
+     * 数据访问对象
+     *
+     * @var PrivilegeDao
+     */
+    protected $privilegeDao;
+
+    public function __construct(PrivilegeDao $privilegeDao)
+    {
+        $this->privilegeDao = $privilegeDao;
+    }
+
+    /**
      * 创建角色
      *
      * @param string $roleName
      * @param array $privilegeList
      *
      * @return int
+     *
+     * @throws \Throwable
      */
     public function createRole($roleName, $privilegeList)
     {
-        return 1;
+        // todo 数据校验
+
+        return $this->privilegeDao->createRole($roleName, $privilegeList);
     }
+
+    /**
+     * 更新角色
+     *
+     * @param int $roleId
+     * @param string $roleName
+     * @param array $privilegeList
+     *
+     * @return bool
+     */
+    public function updateRole($roleId, $roleName, $privilegeList)
+    {
+        // todo 数据校验
+
+        return $this->privilegeDao->updateRole($roleId, $roleName, $privilegeList);
+    }
+
 
     /**
      * 设置角色的禁启用状态
@@ -33,7 +67,9 @@ class PrivilegeManager implements PrivilegeInterface
      */
     public function setRoleStatus($roleId, $status)
     {
-        return 1;
+        // todo 数据校验
+
+        return $this->privilegeDao->setRoleStatus($roleId, $status);
     }
 
     /**
@@ -45,7 +81,9 @@ class PrivilegeManager implements PrivilegeInterface
      */
     public function getRoleInfo($roleId)
     {
-        return [];
+        // todo 数据校验
+
+        return $this->privilegeDao->getRoleInfo($roleId);
     }
 
 }

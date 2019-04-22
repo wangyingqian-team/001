@@ -19,6 +19,17 @@ interface PrivilegeInterface
     public function createRole($roleName, $privilegeList);
 
     /**
+     * 更新角色
+     *
+     * @param int $roleId
+     * @param string $roleName
+     * @param array $privilegeList
+     *
+     * @return bool
+     */
+    public function updateRole($roleId, $roleName, $privilegeList);
+
+    /**
      * 设置角色的禁启用状态
      *
      * @param int $roleId
