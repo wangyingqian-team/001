@@ -1,12 +1,14 @@
 <?php
-namespace App\Contracts\Privilege;
+namespace App\Services\Privilege;
+
+use App\Contracts\Privilege\PrivilegeInterface;
 
 /**
- * 角色与权限相关接口
+ * 角色与权限相关功能
  *
  * @author zhangzhengkun
  */
-interface PrivilegeInterface
+class PrivilegeManager implements PrivilegeInterface
 {
     /**
      * 创建角色
@@ -16,7 +18,10 @@ interface PrivilegeInterface
      *
      * @return int
      */
-    public function createRole($roleName, $privilegeList);
+    public function createRole($roleName, $privilegeList)
+    {
+        return 1;
+    }
 
     /**
      * 设置角色的禁启用状态
@@ -26,7 +31,10 @@ interface PrivilegeInterface
      *
      * @return int
      */
-    public function setRoleStatus($roleId, $status);
+    public function setRoleStatus($roleId, $status)
+    {
+        return 1;
+    }
 
     /**
      * 查看角色详情
@@ -35,5 +43,9 @@ interface PrivilegeInterface
      *
      * @return array
      */
-    public function getRoleInfo($roleId);
+    public function getRoleInfo($roleId)
+    {
+        return [];
+    }
+
 }
