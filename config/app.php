@@ -178,7 +178,13 @@ return [
         /*
          * ======================================
          */
-        \App\Providers\PaymentServiceProvider::class,
+        // 业务功能
+        App\Providers\PaymentServiceProvider::class,
+        App\Providers\ItemServiceProvider::class,
+        App\Providers\OrderServiceProvider::class,
+        App\Providers\PrivilegeServiceProvider::class,
+        App\Providers\ShopServiceProvider::class,
+        App\Providers\UserServiceProvider::class,
 
     ],
 
