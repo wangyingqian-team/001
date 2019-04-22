@@ -136,7 +136,7 @@ class PrivilegeDao
     public function getRoleInfo($roleId)
     {
         $rolePrivilegeData = RoleModel::query()
-            ->select(['id', 'name', 'is_enable', 'created_at', 'updated_at'])
+            ->select(['id', 'name', 'is_enable', 'created_at', 'updated_at', 'privilege'])
             ->leftJoin('role_privilege', 'role.id', '=', 'role_privilege.role_id')
             ->where('role.is_enable', 1)
             ->where('role.id', $roleId)->first();
