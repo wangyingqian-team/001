@@ -64,6 +64,53 @@ class UserAccountManager implements UserAccountInterface
     }
 
     /**
+     * 获取指定用户的基本信息
+     *
+     * @param int $userId
+     * @param array $fields
+     *
+     * @return array
+     */
+    public function getUserInfo($userId, $fields)
+    {
+        Validator::make([
+            'user_id'  => $userId,
+            'fields'   => $fields
+        ], [
+            'user_id'  => 'required|integer|min:1',
+            'fields'   => 'required|array',
+        ], [
+            'required' => ':attribute不能为空',
+            'max'      => ':attribute的长度不能超过:max个字符',
+            'in'       => ':attribute的取值不合法'
+        ], [
+            'user_id'  => '用户编号',
+            'fields'   => '用户属性'
+        ])->validate();
+
+        return $this->userDao->getUserInfo([
+            'id' => $userId
+        ], $fields);
+    }
+
+    /**
+     * 获取用户列表信息
+     *
+     * @param array $filters
+     * @param array $fields
+     * @param array $orderBys
+     * @param int $skip
+     * @param int $limit
+     *
+     * @return array
+     */
+    public function getUserList($filters, $fields, $orderBys = [], $skip = 0, $limit = 20)
+    {
+        return $this->userDao->getUserList($filters, $fields, $orderBys, $skip, $limit);
+    }
+
+
+    /**
      * 注册用户账号
      *
      * @param string $platform
