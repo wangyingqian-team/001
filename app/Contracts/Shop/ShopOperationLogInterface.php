@@ -19,5 +19,18 @@ interface ShopOperationLogInterface
      *
      * @return int
      */
-    public function addOperationLog($shopId, $sellerAccount, $content, $route, $ip);
+    public function addShopOperationLog($shopId, $sellerAccount, $content, $route, $ip);
+
+    /**
+     * 查询商家操作日志列表
+     *
+     * @param array $filters
+     * @param array $fields
+     * @param array $orderBys
+     * @param int $skip
+     * @param int $limit
+     *
+     * @return array
+     */
+    public function getShopOperationLogList($filters, $fields, $orderBys = [], $skip = 0, $limit = 50);
 }

@@ -54,7 +54,7 @@ class UserDao
      * @return array
      *
      */
-    public function getUserList($filters, $fields, $orderBys = [], $skip = 0, $limit = 20)
+    public function getUserList($filters, $fields, $orderBys, $skip, $limit)
     {
         $qb = UserAccountModel::query();
 
