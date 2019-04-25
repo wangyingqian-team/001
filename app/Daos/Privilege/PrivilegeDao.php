@@ -4,6 +4,7 @@ namespace App\Daos\Privilege;
 use App\Exceptions\OperationFailedException;
 use App\Models\Privilege\RoleModel;
 use App\Models\Privilege\RolePrivilegeModel;
+use App\Supports\QueryHelper;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
@@ -135,17 +136,24 @@ class PrivilegeDao
      */
     public function getRoleInfo($roleId)
     {
-        $rolePrivilegeData = RoleModel::query()
-            ->select(['id', 'name', 'is_enable', 'created_at', 'updated_at', 'privilege'])
-            ->leftJoin('role_privilege', 'role.id', '=', 'role_privilege.role_id')
-            ->where('role.is_enable', 1)
-            ->where('role.id', $roleId)->first();
+        // 关联查询
+        $qb = RoleModel::query();
 
-        if (!empty($rolePrivilegeData['privilege'])) {
-            $rolePrivilegeData['privilege_list'] = array_filter(explode(",", $rolePrivilegeData['privilege']));
-            unset($rolePrivilegeData['privilege']);
-        }
+        $qb = QueryHelper::select($qb, [], [
+            'id', 'name', 'status', 'created_at', 'updated_at', 'privilege',
+            'privilege.id', 'privilege.privilege'
+        ]);
 
-        return !empty($rolePrivilegeData) ? $rolePrivilegeData->toArray() : null;
+        $qb = QueryHelper::filter($qb, [
+            'id'     => $roleId,
+            'status' => 1
+        ], [
+            'id'            => ['=', 'in', 'not in'],
+            'status'        => ['=', 'in', 'not in']
+        ]);
+
+        $rolePrivilegeData = $qb->first();
+
+        return !empty($rolePrivilegeData) ? $rolePrivilegeData->toArray() : [];
     }
 }
