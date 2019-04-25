@@ -13,6 +13,7 @@ interface ShopAccountInterface
      *
      * @param string $account
      * @param string $password
+     * @param int $shopId
      * @param int $type
      * @param int $roleId
      * @param string $name
@@ -21,7 +22,7 @@ interface ShopAccountInterface
      *
      * @return int
      */
-    public function registerShopAccount($account, $password, $type, $roleId, $name, $mobile, $email);
+    public function registerShopAccount($account, $password, $shopId, $type, $roleId, $name, $mobile, $email);
 
     /**
      * 修改商家账号信息

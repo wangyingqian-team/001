@@ -39,6 +39,7 @@ class ShopAccountManager implements ShopAccountInterface
      *
      * @param string $account
      * @param string $password
+     * @param int $shopId
      * @param int $type
      * @param int $roleId
      * @param string $name
@@ -47,7 +48,7 @@ class ShopAccountManager implements ShopAccountInterface
      *
      * @return int
      */
-    public function registerShopAccount($account, $password, $type, $roleId, $name, $mobile, $email)
+    public function registerShopAccount($account, $password, $shopId, $type, $roleId, $name, $mobile, $email)
     {
         return 1;
     }
