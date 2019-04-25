@@ -130,16 +130,17 @@ class PrivilegeDao
      * 查看角色详情
      *
      * @param int $roleId
+     * @param array $fields
      *
      * @return array
      *
      */
-    public function getRoleInfo($roleId)
+    public function getRoleInfo($roleId, $fields)
     {
         // 关联查询
         $qb = RoleModel::query();
 
-        $qb = QueryHelper::select($qb, [], [
+        $qb = QueryHelper::select($qb, $fields, [
             'id', 'name', 'status', 'created_at', 'updated_at', 'privilege',
             'privilege.id', 'privilege.privilege'
         ]);
@@ -148,8 +149,8 @@ class PrivilegeDao
             'id'     => $roleId,
             'status' => 1
         ], [
-            'id'            => ['=', 'in', 'not in'],
-            'status'        => ['=', 'in', 'not in']
+            'id'     => ['=', 'in', 'not in'],
+            'status' => ['=', 'in', 'not in']
         ]);
 
         $rolePrivilegeData = $qb->first();

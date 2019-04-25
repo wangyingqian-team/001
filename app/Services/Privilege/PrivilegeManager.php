@@ -143,7 +143,12 @@ class PrivilegeManager implements PrivilegeInterface
             'role_id' => '角色编号'
         ])->validate();
 
-        $roleInfo = $this->privilegeDao->getRoleInfo($roleId);
+        $fields = [
+            'id', 'name', 'status', 'created_at', 'updated_at',
+            'privilege.id', 'privilege.privilege'
+        ];
+
+        $roleInfo = $this->privilegeDao->getRoleInfo($roleId, $fields);
 
         // 处理权限列表数据
         if (!empty($roleInfo['privilege'])) {
