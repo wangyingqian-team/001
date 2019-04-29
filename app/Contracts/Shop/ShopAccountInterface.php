@@ -30,9 +30,9 @@ interface ShopAccountInterface
      * @param int $accountId
      * @param int $type
      * @param int $roleId
-     * @param $name
-     * @param $mobile
-     * @param $email
+     * @param string $name
+     * @param string $mobile
+     * @param string $email
      *
      * @return int
      *
