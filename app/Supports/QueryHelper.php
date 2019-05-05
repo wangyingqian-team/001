@@ -1,6 +1,7 @@
 <?php
 namespace App\Supports;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Expression;
 use InvalidArgumentException;
 
@@ -11,6 +12,30 @@ use InvalidArgumentException;
  */
 class QueryHelper
 {
+
+    public static function easyQuery(Builder $qb, $fields = [], $filters = [], $orderBys = [], $page = 0, $limit = 20)
+    {
+        if (!empty($fields)){
+            $qb = self::select($qb, $fields);
+        }
+
+        if (!empty($filters)){
+            $qb = self::filter($qb, $filters);
+        }
+
+        if (!empty($orderBys)){
+            $qb = self::orderBy($qb, $orderBys);
+        }
+
+        if (!empty($page)){
+            $qb = self::forPage($qb, $page, $limit);
+        }
+
+        $result = $qb->get();
+
+        return empty($result) ? [] : $result->toArray();
+    }
+
     /**
      * 选择处理
      *
@@ -23,12 +48,12 @@ class QueryHelper
      *
      * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
      */
-    public static function select($qb, array $fields, array $selectAbles)
+    public static function select($qb, array $fields, array $selectAbles = [])
     {
         $groups = [];
 
         foreach ($fields as $field) {
-            if (!in_array($field, $selectAbles)) {
+            if (!empty($selectAbles) && !in_array($field, $selectAbles)) {
                 throw new InvalidArgumentException(sprintf(
                     '字段 %s 不可选取，可选取字段有：%s', $field, implode(', ', $selectAbles)
                 ));
@@ -78,16 +103,16 @@ class QueryHelper
      *
      * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
      */
-    public static function filter($qb, array $filters, array $filterAbles)
+    public static function filter($qb, array $filters, array $filterAbles = [])
     {
         foreach ($filters as $key => $value) {
             [$column, $operator] = strrpos($key, '|') !== false ? explode('|', $key, 2) : [$key, '='];
 
-            if (!isset($filterAbles[$column])) {
+            if (!empty($filterAbles) && !isset($filterAbles[$column])) {
                 continue;
             }
 
-            if (!in_array($operator, (array) $filterAbles[$column])) {
+            if (isset($filterAbles[$column]) && !in_array($operator, (array) $filterAbles[$column])) {
                 $operators = array_map(function ($operator) {
                     return "'{$operator}'";
                 }, (array) $filterAbles[$column]);
@@ -144,10 +169,10 @@ class QueryHelper
      *
      * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder
      */
-    public static function orderBy($qb, array $orderBy, array $orderAbles)
+    public static function orderBy($qb, array $orderBy, array $orderAbles = [])
     {
         foreach ($orderBy as $column => $direction) {
-            if (!in_array($column, $orderAbles)) {
+            if (!empty($orderAbles) &&!in_array($column, $orderAbles)) {
                 throw new InvalidArgumentException(sprintf(
                     '字段 %s 不可用于排序，可排序字段有：%s', $column, implode(', ', $orderAbles)
                 ));

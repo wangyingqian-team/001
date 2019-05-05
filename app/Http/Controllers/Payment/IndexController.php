@@ -8,6 +8,8 @@ class IndexController extends Controller
 {
     public function index(Request $request)
     {
-        dd(app('payment'));
+        $bill = app('payment')->getBillInfo();
+
+        dd($bill);
     }
 }

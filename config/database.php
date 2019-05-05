@@ -122,6 +122,13 @@ return [
             'prefix'  => Str::slug(env('APP_NAME', 'dine'), '_').'_database_',
         ],
 
+        'default' => [
+            'host'     => env('REDIS_HOST', 'tcp://redis'),
+            'password' => env('REDIS_PASSWORD', 'mmp123WOCAO'),
+            'port'     => env('REDIS_PORT', 6379),
+            'database' => 15,
+        ],
+
         'user' => [
             'host'     => env('REDIS_HOST', 'tcp://redis'),
             'password' => env('REDIS_PASSWORD', 'mmp123WOCAO'),
