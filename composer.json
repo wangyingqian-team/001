@@ -14,7 +14,7 @@
         "laravel/tinker": "^1.0",
         "predis/predis": "1.1",
         "wangyingqian/alichat": "dev-master",
-        "aliyuncs/oss-sdk-php": "~2.0"
+        "aliyuncs/oss-sdk-php": "^2"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

@@ -2,14 +2,13 @@
 namespace App\Http\Controllers\Payment;
 
 use App\Http\Controllers\Controller;
+use App\Supports\AliOss;
 use Illuminate\Http\Request;
 
 class IndexController extends Controller
 {
     public function index(Request $request)
     {
-        $bill = app('payment')->getBillInfo();
-
-        dd($bill);
+       AliOss::upload('dine', 'item/item-1', 'test');
     }
 }
