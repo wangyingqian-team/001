@@ -1,11 +1,14 @@
 <?php
 namespace App\Daos\Query;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Liviator\Exception\LiviatorException;
 use Liviator\Exception\OperationFailedException;
+use Wangyingqian\AliChat\Support\Log;
 
-abstract class Common
+abstract class CommonDao
 {
     /**
      * @var int
@@ -84,7 +87,7 @@ abstract class Common
      *
      * @return array
      */
-    public static function getEasyPageList($filters, $fields, $orderBys, $page, $pageSize = 20)
+    public static function getEasyPageList($filters, $fields = [], $orderBys, $page, $pageSize = 20)
     {
         try {
             $qb = self::easyQuery($filters, $fields, $orderBys);
@@ -127,7 +130,7 @@ abstract class Common
      *
      * @return array
      */
-    public static function getEasyList($filters, $fields, $orderBys, $limit = -1, $skip = 0)
+    public static function getEasyList($filters, $fields = [], $orderBys, $limit = -1, $skip = 0)
     {
         if ($limit > static::$limit) {
             throw new OperationFailedException('查询最大记录数不允许超过'.static::$limit);
@@ -171,7 +174,7 @@ abstract class Common
      *
      * @return array
      */
-    public static function getUnlimitedItemList($filters, $fields, $orderBys, $limit = -1, $skip = 0)
+    public static function getUnlimitedItemList($filters, $fields = [], $orderBys, $limit = -1, $skip = 0)
     {
         try {
             $qb = self::easyQuery($filters, $fields, $orderBys);
