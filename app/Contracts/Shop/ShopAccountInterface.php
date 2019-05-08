@@ -80,7 +80,7 @@ interface ShopAccountInterface
      * @return array
      *
      */
-    public function checkIfLogin($shopToken);
+    public function checkLogin($shopToken);
 
     /**
      * 将账号关联到指定店铺

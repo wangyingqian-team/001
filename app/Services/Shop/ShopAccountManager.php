@@ -3,6 +3,7 @@ namespace App\Services\Shop;
 
 use App\Contracts\Shop\ShopAccountInterface;
 use App\Daos\Shop\ShopDao;
+use App\Exceptions\AuthenticationException;
 use App\Exceptions\IllegalArgumentException;
 use App\Services\Shop\Cache\ShopAccountCache;
 use Illuminate\Support\Facades\Validator;
@@ -239,9 +240,38 @@ class ShopAccountManager implements ShopAccountInterface
      * @return array
      *
      */
-    public function checkIfLogin($shopToken)
+    public function checkLogin($shopToken)
     {
-        return [];
+        if (empty($shopToken)) {
+            throw new IllegalArgumentException("店铺登录token缺失");
+        }
+
+        // 查看token是否失效
+        $accountInfo = $this->accountCache->getLoginTokenCache($shopToken);
+        if (empty($accountInfo)) {
+            throw new AuthenticationException("登录状态已失效");
+        }
+
+        // 延长token的失效时间
+        $this->accountCache->setLoginTokenCache($shopToken, $accountInfo);
+
+        // 获取角色缓存
+        $roleId = $this->accountCache->getAccountRoleCache($accountInfo['id']);
+
+        if (is_null($roleId)) {
+            $roleId = $accountInfo['role_id'];
+        }
+
+        // 延长角色缓存的失效时间
+        $this->accountCache->setAccountRoleCache($accountInfo['id'], $roleId);
+
+        return [
+            'account_id' => $accountInfo['id'],
+            'account'    => $accountInfo['account'],
+            'shop_id'    => $accountInfo['shop_id'],
+            'type'       => $accountInfo['type'],
+            'role_id'    => $roleId
+        ];
     }
 
     /**
