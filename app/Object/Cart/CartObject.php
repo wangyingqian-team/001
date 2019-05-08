@@ -1,7 +1,12 @@
 <?php
+
 namespace App\Object\Cart;
 
+use App\Daos\Order\CartDao;
 use App\Models\Order\CartModel;
+use Liviator\Exception\ResourceNotFoundException;
+use Liviator\Exception\UnsupportedOperationException;
+use Wangyingqian\AliChat\Kernel\Config;
 
 /***
  * 购物车对象
@@ -44,12 +49,12 @@ class CartObject
 
 
         //获取购物车信息
-        $cartItemInfo = $this->getCartItemInfo();
+        $cartRows = $this->getUserRows();
 
         //初始化购物车对象
-        if ($cartItemInfo) {
-            foreach ($cartItemInfo as $item) {
-                $rowObject = new RowObject($item);
+        if (!empty($cartRows)) {
+            foreach ($cartRows as $row) {
+                $rowObject = new RowObject($row);
                 $this->rows[$rowObject->id] = $rowObject;
             }
         }
@@ -70,16 +75,13 @@ class CartObject
     }
 
     /**
-     * 获取购物车信息
+     * 获取购物车行项目列表
      *
      * @return array
      */
-    private function getCartRowInfo()
+    private function getUserRows()
     {
-        //拉取购物车信息
-        return CartModel::query()
-            ->where('user_id', $this->owner)
-            ->get()->toArray();
+        return CartDao::getUnlimitedItemList(['user_id' => $this->owner]);
     }
 
     /**
@@ -94,17 +96,27 @@ class CartObject
     }
 
     /**
-     * 判断购物车是否存在商品
+     *  统计行项目数
      *
-     * @param \TrOrder\Cart\Object\ItemObject
+     * @return mixed
+     */
+    public function countCart()
+    {
+        return $this->count;
+    }
+
+    /**
+     * 判断购物车是否存在菜品
+     *
+     * @param RowObject $row
      * @return integer|null
      */
-    public function isExistItem(ItemObject $item)
+    public function isExistRow(RowObject $row)
     {
         //遍历校验行项目对象是否存在购物车里面
-        foreach ($this->items as $cartItem) {
-            if ($cartItem->skuId == $item->skuId) {
-                return $cartItem->id;
+        foreach ($this->rows as $cartRow) {
+            if ($cartRow->skuId == $row->skuId) {
+                return $cartRow->id;
             }
         }
         return null;
@@ -115,54 +127,38 @@ class CartObject
      *
      * @return array
      */
-    public function getItems()
+    public function getRows()
     {
-        return $this->items;
+        return $this->rows;
     }
 
 
     /**
      * 加入购物车
      *
-     * @param \TrOrder\Cart\Object\ItemObject $item
+     * @param RowObject $row
      * @return int
-     * @throws ValidationException
      */
-    public function addItemToCart(ItemObject $item)
+    public function addDishToCart(RowObject $row)
     {
-        try {
-
-            if($this->count >= Config::get('order.cart.max_line')) throw new UnsupportedOperationException('已超过购物车最大容量！');
-
-            //如果不存在则新增到购物车
-            $cartModel = CartModel::create([
-                'user_id' => $this->owner,
-                'user_ident' => '',
-                'channel' => $this->channel,
-                'shop_id' => $item->shopId,
-                'item_id' => $item->itemId,
-                'sku_id' => $item->skuId,
-                'quantity' => $item->getNum(),
-                'platform' => $item->platform,
-                'extra' => $item->extra,
-            ]);
-
-            Log::channel('cart')->info("加入购物车成功", ['ItemObject' => $item]);
-
-            $this->items[$cartModel->id] = $item;
-
-            //新增行项目
-            $this->count++;
-
-        } catch (LiviatorException|ValidationException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            Log::channel('cart')->error("加入购物车失败", [
-                'params' => ['ItemObject' => $item, 'user_id' => $this->owner],
-                'exception' => $e
-            ]);
-            throw new OperationFailedException('加入购物车失败！');
+        if ($this->count >= Config::get('order.cart.max_row')) {
+            throw new UnsupportedOperationException('已超过购物车最大容量！');
         }
+
+        //如果不存在则新增到购物车
+        $cartModel = CartModel::create([
+            'user_id' => $this->owner,
+            'shop_id' => $row->shopId,
+            'dish_id' => $row->dishId,
+            'sku_id' => $row->skuId,
+            'quantity' => $row->getQuantity(),
+            'platform' => $row->platform,
+        ]);
+
+        $this->rows[$cartModel->id] = $row;
+
+        //新增行项目
+        $this->count++;
 
         return $cartModel->id;
     }
@@ -171,24 +167,16 @@ class CartObject
     /***
      *  更新购物袋
      *
-     * @param ItemObject $item
+     * @param RowObject $row
      * @param $cartId
      *
      * @return bool
      */
-    public function updateCartItem(ItemObject $item, $cartId)
+    public function updateCartDish(RowObject $row, $cartId)
     {
         //获取购物车里的行对象
-        $itemObject = $this->items[$cartId];
-        $itemObject->modifyNum($itemObject->getNum() + $item->getNum());
-
-        //replace extra中部分属性 eg: commission_user_id
-        if(!empty($item->extra['commission_user_id']))
-            $itemObject->modifyExtraField('commission_user_id', $item->extra['commission_user_id']);
-        if(!empty($item->extra['name_card_salesman_id']))
-            $itemObject->modifyExtraField('name_card_salesman_id', $item->extra['name_card_salesman_id']);
-        if(!empty($item->extra['commission_ucenter_id']))
-            $itemObject->modifyExtraField('commission_ucenter_id', $item->extra['commission_ucenter_id']);
+        $rowObject = $this->rows[$cartId];
+        $rowObject->modifyNum($rowObject->getQuantity() + $row->getQuantity());
 
         return true;
     }
@@ -197,17 +185,17 @@ class CartObject
      * 修改购物车行项目数量
      *
      * @param int $id
-     * @param int $num
+     * @param int $quantity
      * @return bool
      */
-    public function modifyItemNum(int $id, int $num)
+    public function modifyRowNum(int $id, int $quantity)
     {
-        if (!isset($this->items[$id])) {
+        if (!isset($this->rows[$id])) {
             throw new ResourceNotFoundException("找不到行项目记录");
         }
 
         //调用行项目对象里的数量修改方法
-        return $this->items[$id]->modifyNum($num);
+        return $this->rows[$id]->modifyQuantity($quantity);
     }
 
 
@@ -218,88 +206,41 @@ class CartObject
      * @param int $skuId
      * @return mixed
      */
-    public function modifyItemSku(int $id, int $skuId)
+    public function modifyRowSku(int $id, int $skuId)
     {
-        if (!isset($this->items[$id])) {
+        if (!isset($this->rows[$id])) {
             throw new ResourceNotFoundException("找不到行项目记录");
         }
 
         //调用行项目对象里的数量修改方法
-        return $this->items[$id]->modifySku($skuId);
+        return $this->rows[$id]->modifySku($skuId);
     }
 
-
-    /**
-     *  修改购物车行项目的price
-     *
-     * @param int $id
-     * @param $price
-     * @return mixed
-     */
-    public function modifyItemPrice(int $id, $price)
-    {
-        if (!isset($this->items[$id])) {
-            throw new ResourceNotFoundException("找不到行项目记录");
-        }
-
-        //调用行项目对象里的数量修改方法
-        return $this->items[$id]->modifyExtraField('price', $price);
-    }
-
-
-    /**
-     *  删除购物车行项目的price
-     *
-     * @param int $id
-     * @return mixed
-     */
-    public function removeItemPrice(int $id)
-    {
-        if (!isset($this->items[$id])) {
-            throw new ResourceNotFoundException("找不到行项目记录");
-        }
-
-        //调用行项目对象里的数量修改方法
-        return $this->items[$id]->removeExtraField('price');
-    }
 
     /**
      * 移除购物车行项目
      *
      * @param array $ids 行项目id集合
-     * @return array | throw Exception
-     * @throws ValidationException
+     * @return array
      */
-    public function removeItemFromCart(array $ids)
+    public function removeRowFromCart(array $ids)
     {
-        $cartIds = array_keys($this->items);
+        $cartIds = array_keys($this->rows);
 
         //取交集
         $intersectIds = array_values(array_intersect($ids, $cartIds));
 
-        try {
-            //如果交集为空则直接返回
-            if (!empty($intersectIds)) {
-                CartModel::query()
-                    ->whereIn('id', $intersectIds)
-                    ->delete();
 
-                $this->items = array_except($this->items, $intersectIds);
+        //如果交集为空则直接返回
+        if (!empty($intersectIds)) {
+            CartModel::query()
+                ->whereIn('id', $intersectIds)
+                ->delete();
 
-                //减掉对应行数
-                $this->count = $this->count - count($intersectIds);
-            }
+            $this->rows = array_except($this->rows, $intersectIds);
 
-            Log::channel('cart')->info("移除购物车行项目成功", ['ids' => $intersectIds]);
-
-        } catch (LiviatorException|ValidationException $e) {
-            throw $e;
-        } catch (\Throwable $e) {
-            Log::channel('cart')->error("移除购物车行项目失败", [
-                'params' => ['ids' => $ids, 'user_id' => $this->owner],
-                'exception' => $e
-            ]);
-            throw new OperationFailedException('移除购物车行项目失败！');
+            //减掉对应行数
+            $this->count = $this->count - count($intersectIds);
         }
 
         return ['status' => true, 'removed_items' => $intersectIds];
@@ -309,44 +250,21 @@ class CartObject
      * 清空购物车
      *
      * @return bool
-     * @throws ValidationException
      */
     public function clearCart()
     {
-        try {
-            $cartIds = array_keys($this->items);
+        $cartIds = array_keys($this->rows);
 
-            CartModel::query()
-                ->whereIn('id', $cartIds)
-                ->delete();
+        CartModel::query()
+            ->whereIn('id', $cartIds)
+            ->delete();
 
-            $this->items = [];
+        $this->rows = [];
 
-            $this->count = 0;
-
-            Log::channel('cart')->info("清空购物车成功", ['user_id' => $this->owner]);
-        } catch (LiviatorException|ValidationException $e) {
-            throw $e;
-
-        } catch (\Throwable $e) {
-            Log::channel('cart')->error("清空购物车失败", [
-                'params' => [ 'user_id' => $this->owner],
-                'exception' => $e
-            ]);
-            throw new OperationFailedException('清空购物车失败！');
-        }
-
+        $this->count = 0;
 
         return true;
     }
 
-    /**
-     *  统计行项目数
-     *
-     * @return mixed
-     */
-    public function countCart()
-    {
-        return $this->count;
-    }
+
 }
