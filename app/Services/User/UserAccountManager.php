@@ -81,11 +81,12 @@ class UserAccountManager implements UserAccountInterface
             'fields'   => 'required|array',
         ], [
             'required' => ':attribute不能为空',
-            'max'      => ':attribute的长度不能超过:max个字符',
-            'in'       => ':attribute的取值不合法'
+            'integer'  => ':attribute必须为整数',
+            'min'      => ':attribute必须是正整数',
+            'array'    => ':attribute必须是数组格式'
         ], [
             'user_id'  => '用户编号',
-            'fields'   => '用户属性'
+            'fields'   => '用户属性列表'
         ])->validate();
 
         return $this->userDao->getUserInfo([

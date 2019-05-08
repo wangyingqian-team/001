@@ -13,16 +13,16 @@ interface ShopAccountInterface
      *
      * @param string $account
      * @param string $password
-     * @param int $shopId
      * @param int $type
      * @param int $roleId
      * @param string $name
      * @param string $mobile
      * @param string $email
+     * @param int $shopId
      *
      * @return int
      */
-    public function registerShopAccount($account, $password, $shopId, $type, $roleId, $name, $mobile, $email);
+    public function registerShopAccount($account, $password, $type, $roleId, $name, $mobile, $email, $shopId = 0);
 
     /**
      * 修改商家账号信息
@@ -96,13 +96,13 @@ interface ShopAccountInterface
     /**
      * 查询某个账号的基本信息
      *
-     * @param int $shopId
+     * @param int $accountId
      * @param array $fields
      *
      * @return array
      *
      */
-    public function getShopAccountInfo($shopId, $fields);
+    public function getShopAccountInfo($accountId, $fields);
 
     /**
      * 查下账号列表信息
