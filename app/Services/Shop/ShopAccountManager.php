@@ -376,6 +376,42 @@ class ShopAccountManager implements ShopAccountInterface
     }
 
     /**
+     * 校验登录账号密码是否输入正确
+     *
+     * @param string $account
+     * @param string $password
+     *
+     * @return array
+     *
+     */
+    private function verifyAccountLogin($account, $password)
+    {
+        if (empty($account)) {
+            throw new IllegalArgumentException('缺少商家账号！');
+        }
+
+        if (empty($password)) {
+            throw new IllegalArgumentException('缺少商家账号密码！');
+        }
+
+        $accountInfo = $this->shopDao->getShopAccountInfo([
+            'is_valid' => 1,
+            'account' => $account
+        ], [
+            'id', 'shop_id', 'type', 'account', 'password', 'name', 'mobile', 'email'
+        ]);
+        if (empty($accountInfo)) {
+            throw new IllegalArgumentException('商家账号不存在或者商家账号失效！');
+        }
+
+        if (!password_verify($password, $accountInfo['password'])) {
+            throw new AuthenticationException('商家账号或者密码错误！');
+        }
+
+        return $accountInfo;
+    }
+
+    /**
      * 检查账号被占用情况
      *
      * @param string $account
