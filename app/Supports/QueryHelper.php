@@ -12,7 +12,6 @@ use InvalidArgumentException;
  */
 class QueryHelper
 {
-
     public static function easyQuery(Builder $qb, $fields = [], $filters = [], $orderBys = [], $page = 0, $limit = 20)
     {
         if (!empty($fields)){
