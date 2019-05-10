@@ -5,8 +5,11 @@ use App\Contracts\Shop\ShopAccountInterface;
 use App\Daos\Shop\ShopDao;
 use App\Exceptions\AuthenticationException;
 use App\Exceptions\IllegalArgumentException;
+use App\Exceptions\OperationFailedException;
 use App\Services\Shop\Cache\ShopAccountCache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Throwable;
 
 /**
  * 商家账号相关功能
@@ -334,7 +337,33 @@ class ShopAccountManager implements ShopAccountInterface
      */
     public function relateAccountWithShop($accountId, $shopId)
     {
-        return 1;
+        // 基础数据校验
+        Validator::make([
+            'account_id' => $accountId,
+            'shop_id'    => $shopId
+        ], [
+            'account_id' => 'required|integer|min:1',
+            'shop_id'    => 'required|integer|min:1'
+        ], [
+            'required' => ':attribute不能为空',
+            'integer'  => ':attribute必须是整数',
+            'min'      => ':attribute必须为正整数'
+        ], [
+            'account_id' => '商家账户编号',
+            'shop_id'    => '店铺编号'
+        ])->validate();
+
+        // 关联店铺
+        try {
+            return $this->shopDao->updateShopAccount(['id' => $accountId], ['shop_id' => $shopId]);
+        } catch (Throwable $e) {
+            Log::error('商家账号关联店铺失败 account_id:' . $accountId, [
+                'exception' => $e,
+                'params'    => ['account_id' => $accountId, 'shop_id' => $shopId]
+            ]);
+
+            throw new OperationFailedException('商家账号关联店铺失败！');
+        }
     }
 
     /**
