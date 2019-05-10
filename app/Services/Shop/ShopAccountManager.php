@@ -229,7 +229,56 @@ class ShopAccountManager implements ShopAccountInterface
      */
     public function loginShopAccount($account, $password)
     {
-        return [];
+        // 基础数据校验
+        Validator::make([
+            'account'  => $account,
+            'password' => $password
+        ], [
+            'account'  => 'required|string|min:3|max:20',
+            'password' => 'required|string|min:6|max:20'
+        ], [
+            'required' => ':attribute不能为空',
+            'min'      => ':attribute的长度不能超过:max个字符',
+            'max'      => ':attribute的长度不能超过:max个字符',
+        ], [
+            'account'  => '商家账号',
+            'password' => '商家密码'
+        ])->validate();
+
+        // 账号密码校验
+        $accountInfo = $this->verifyAccountLogin($account, $password);
+
+        $cacheAccountInfo = [
+            'account_id' => $accountInfo['id'],
+            'account'    => $accountInfo['account'],
+            'shop_id'    => $accountInfo['shop_id'],
+            'type'       => $accountInfo['type'],
+            'role_id'    => $accountInfo['role_id'],
+            'name'       => $accountInfo['name'],
+            'mobile'     => $accountInfo['mobile'],
+            'email'      => $accountInfo['email']
+        ];
+
+        // 生成登录令牌
+        $loginToken = md5($account . time() . "loginToken");
+
+        // 将令牌保存到缓存中
+        $this->accountCache->setLoginTokenCache($loginToken, $cacheAccountInfo);
+
+        // 缓存用户的角色ID
+        $roleId = $accountInfo['role_id'];
+        $this->accountCache->setAccountRoleCache($accountInfo['id'], $roleId);
+
+        $loginInfo = [
+            'token'      => $loginToken,
+            'account_id' => $accountInfo['id'],
+            'account'    => $accountInfo['account'],
+            'shop_id'    => $accountInfo['shop_id'],
+            'type'       => $accountInfo['type'],
+            'role_id'    => $accountInfo['role_id']
+        ];
+
+        return $loginInfo;
     }
 
     /**
@@ -398,7 +447,7 @@ class ShopAccountManager implements ShopAccountInterface
             'is_valid' => 1,
             'account' => $account
         ], [
-            'id', 'shop_id', 'type', 'account', 'password', 'name', 'mobile', 'email'
+            'id', 'shop_id', 'type', 'role_id', 'account', 'password', 'name', 'mobile', 'email'
         ]);
         if (empty($accountInfo)) {
             throw new IllegalArgumentException('商家账号不存在或者商家账号失效！');
