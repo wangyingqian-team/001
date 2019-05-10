@@ -268,10 +268,6 @@ class ShopAccountManager implements ShopAccountInterface
         // 将令牌保存到缓存中
         $this->accountCache->setLoginTokenCache($loginToken, $cacheAccountInfo);
 
-        // 缓存用户的角色ID
-        $roleId = $accountInfo['role_id'];
-        $this->accountCache->setAccountRoleCache($accountInfo['id'], $roleId);
-
         $loginInfo = [
             'token'      => $loginToken,
             'account_id' => $accountInfo['id'],
@@ -307,22 +303,12 @@ class ShopAccountManager implements ShopAccountInterface
         // 延长token的失效时间
         $this->accountCache->setLoginTokenCache($shopToken, $accountInfo);
 
-        // 获取角色缓存
-        $roleId = $this->accountCache->getAccountRoleCache($accountInfo['id']);
-
-        if (is_null($roleId)) {
-            $roleId = $accountInfo['role_id'];
-        }
-
-        // 延长角色缓存的失效时间
-        $this->accountCache->setAccountRoleCache($accountInfo['id'], $roleId);
-
         return [
             'account_id' => $accountInfo['id'],
             'account'    => $accountInfo['account'],
             'shop_id'    => $accountInfo['shop_id'],
             'type'       => $accountInfo['type'],
-            'role_id'    => $roleId
+            'role_id'    => $accountInfo['role_id']
         ];
     }
 
