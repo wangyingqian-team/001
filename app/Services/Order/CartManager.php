@@ -47,7 +47,7 @@ class CartManager implements CartInterface
 
 
             //todo 验证商品当前上下架状态
-            if () {
+            if ('商品未上架') {
                 throw new IllegalArgumentException('商品未上架');
             }
 
