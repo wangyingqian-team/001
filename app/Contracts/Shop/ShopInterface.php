@@ -13,12 +13,14 @@ interface ShopInterface
      *
      * @param int $accountId
      * @param string $name
-     * @param string $mobile
-     * @param string $email
      * @param string $description
+     * @param string $sellerName
+     * @param string $sellerTel
+     * @param string $address
      * @param string $logo
      *
      * @return int
+     *
      */
-    public function shopEnterApply($accountId, $name, $mobile, $email, $description, $logo);
+    public function shopEnterApply($accountId, $name, $description, $sellerName, $sellerTel, $address, $logo);
 }

@@ -1,9 +1,14 @@
 <?php
 namespace App\Daos\Shop;
 
+use App\Exceptions\OperationFailedException;
 use App\Models\Shop\ShopAccountModel;
+use App\Models\Shop\ShopModel;
 use App\Models\Shop\ShopOperationLogModel;
 use App\Supports\QueryHelper;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * 商家相关数据操作对象
@@ -230,5 +235,66 @@ class ShopDao
             'count'       => $count,
             'data'        => !empty($data) ? $data->toArray() : []
         ];
+    }
+
+    /**
+     * 创建店铺
+     *
+     * @param int $accountId
+     * @param string $name
+     * @param string $description
+     * @param string $sellerName
+     * @param string $sellerTel
+     * @param string $address
+     * @param string $logo
+     *
+     * @return int
+     *
+     */
+    public function addShop($accountId, $name, $description, $sellerName, $sellerTel, $address, $logo)
+    {
+        DB::beginTransaction();
+
+        try {
+            // 默认店铺是激活有效
+            $isActive = 1;
+
+            // 创建店铺
+            $shopId   = ShopModel::query()->insertGetId([
+                'name'        => $name,
+                'description' => $description,
+                'seller_name' => $sellerName,
+                'seller_tel'  => $sellerTel,
+                'address'     => $address,
+                'logo'        => $logo,
+                'is_active'   => $isActive
+            ]);
+
+            // 添加店铺账号绑定
+            ShopAccountModel::query()->whereKey($accountId)->update([
+                'shop_id' => $shopId
+            ]);
+
+            DB::commit();
+        } catch (Throwable $e) {
+            DB::rollBack();
+
+            Log::error('创建店铺失败', [
+                'exception' => $e,
+                'params'    => [
+                    'account_id'  => $accountId,
+                    'name'        => $name,
+                    'description' => $description,
+                    'seller_name' => $sellerName,
+                    'seller_tel'  => $sellerTel,
+                    'address'     => $address,
+                    'logo'        => $logo
+                ]
+            ]);
+
+            throw new OperationFailedException('创建店铺失败！');
+        }
+
+        return $shopId;
     }
 }
