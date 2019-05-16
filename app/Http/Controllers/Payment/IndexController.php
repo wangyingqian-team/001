@@ -10,7 +10,7 @@ class IndexController extends Controller
 {
     public function index(Request $request)
     {
-       AliOss::upload('dine', 'item/item-1', 'test');
+       dd(1);
     }
 
     public function test(Request $request)
