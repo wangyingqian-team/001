@@ -5,12 +5,15 @@ use App\Http\Controllers\Controller;
 use App\Supports\AliOss;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 class IndexController extends Controller
 {
     public function index(Request $request)
     {
-       dd(1);
+       $redis = Redis::connection();
+        dd($redis->get('a'));
+
     }
 
     public function test(Request $request)
